@@ -46,6 +46,9 @@ public final class SettingsWindowController: NSWindowController {
 		super.init(window: window)
 
 		window.contentViewController = tabViewController
+      window.onClose = {
+         window.contentViewController = nil
+      }
 
 		window.titleVisibility = {
 			switch style {
@@ -89,6 +92,7 @@ public final class SettingsWindowController: NSWindowController {
 	- See `showWindow(_:)` to show the window without the convenience of activating the app.
 	*/
 	public func show(pane paneIdentifier: Settings.PaneIdentifier? = nil) {
+        window?.contentViewController = tabViewController
 		if let paneIdentifier {
 			tabViewController.activateTab(paneIdentifier: paneIdentifier, animated: false)
 		} else {
@@ -104,7 +108,7 @@ public final class SettingsWindowController: NSWindowController {
 		#else
 		NSApp.activate(ignoringOtherApps: true)
 		#endif
-
+        window?.contentViewController = tabViewController
 		showWindow(self)
 		restoreWindowPosition()
 	}

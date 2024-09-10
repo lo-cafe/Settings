@@ -76,9 +76,17 @@ extension Bundle {
 A window that allows you to disable all user interactions via `isUserInteractionEnabled`.
 
 Used to avoid breaking animations when the user clicks too fast. Disable user interactions during animations and you're set.
+
+It also allows a onClose callback.
 */
-class UserInteractionPausableWindow: NSWindow { // swiftlint:disable:this final_class
+class UserInteractionPausableWindow: NSWindow, NSWindowDelegate { // swiftlint:disable:this final_class
 	var isUserInteractionEnabled = true
+	var onClose: (() -> ())? = nil
+
+	override init(contentRect: NSRect, styleMask style: NSWindow.StyleMask, backing backingStoreType: NSWindow.BackingStoreType, defer flag: Bool) {
+		super.init(contentRect: contentRect, styleMask: style, backing: backingStoreType, defer: flag)
+		delegate = self
+	}
 
 	override func sendEvent(_ event: NSEvent) {
 		guard isUserInteractionEnabled || !event.isUserInteraction else {
@@ -96,6 +104,10 @@ class UserInteractionPausableWindow: NSWindow { // swiftlint:disable:this final_
 
 		return super.responds(to: selector)
 	}
+
+	func windowWillClose(_ notification: Notification) {
+      onClose?()
+   }
 }
 
 
